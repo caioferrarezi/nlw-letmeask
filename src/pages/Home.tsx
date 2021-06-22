@@ -1,17 +1,23 @@
 import { useHistory } from 'react-router-dom'
 
+import { useAuth } from '../hooks/useAuth';
+import { Button } from '../components/Button';
+
 import illustrationImg from '../assets/images/illustration.svg';
 import logoImg from '../assets/images/logo.svg';
 import googleIconImg from '../assets/images/google-icon.svg';
-
-import { Button } from '../components/Button';
 
 import '../styles/auth.scss';
 
 export function Home() {
   const history = useHistory();
+  const { user, signInWithGoogle } = useAuth();
 
-  function navigateToNewRoom() {
+  async function handleCreateRoom() {
+    if (!user) {
+      await signInWithGoogle()
+    }
+
     history.push('/salas/nova');
   }
 
@@ -34,7 +40,7 @@ export function Home() {
           <button
             type="button"
             className="create-room"
-            onClick={navigateToNewRoom}
+            onClick={handleCreateRoom}
           >
             <img src={googleIconImg} alt="Logo do Google" />
 
