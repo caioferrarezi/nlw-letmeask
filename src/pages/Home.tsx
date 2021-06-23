@@ -1,7 +1,9 @@
+import { FormEvent, useState } from 'react';
 import { useHistory } from 'react-router-dom'
 
 import { useAuth } from '../hooks/useAuth';
 import { Button } from '../components/Button';
+import { database } from '../services/firebase';
 
 import illustrationImg from '../assets/images/illustration.svg';
 import logoImg from '../assets/images/logo.svg';
@@ -10,6 +12,7 @@ import googleIconImg from '../assets/images/google-icon.svg';
 import '../styles/auth.scss';
 
 export function Home() {
+  const [roomCode, setRoomCode] = useState('');
   const history = useHistory();
   const { user, signInWithGoogle } = useAuth();
 
@@ -19,6 +22,24 @@ export function Home() {
     }
 
     history.push('/salas/nova');
+  }
+
+  async function handleEnterRoom(event: FormEvent) {
+    event.preventDefault();
+
+    if (roomCode.trim() === '') {
+      return;
+    }
+
+    const roomRef = database.ref(`rooms/${roomCode}`).get();
+
+    if (!roomRef) {
+      alert('A sala não existe');
+
+      return;
+    }
+
+    history.push(`/salas/${roomCode}`);
   }
 
   return (
@@ -49,10 +70,12 @@ export function Home() {
 
           <div className="separator">ou entre em uma sala</div>
 
-          <form action="">
+          <form onSubmit={handleEnterRoom}>
             <input
               type="text"
               placeholder="Digite o código da sala"
+              value={roomCode}
+              onChange={event => setRoomCode(event.target.value)}
             />
 
             <Button type="submit">
