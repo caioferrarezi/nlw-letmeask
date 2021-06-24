@@ -31,10 +31,16 @@ export function Home() {
       return;
     }
 
-    const roomRef = database.ref(`rooms/${roomCode}`).get();
+    const roomRef = await database.ref(`rooms/${roomCode}`).get();
 
-    if (!roomRef) {
+    if (!roomRef.exists()) {
       alert('A sala não existe');
+
+      return;
+    }
+
+    if (roomRef.val().endedAt) {
+      alert('A sala já foi fechada');
 
       return;
     }
