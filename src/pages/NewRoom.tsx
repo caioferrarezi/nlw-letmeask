@@ -9,11 +9,12 @@ import illustrationImg from '../assets/images/illustration.svg';
 import logoImg from '../assets/images/logo.svg';
 
 import '../styles/auth.scss';
+import { generateId } from '../tools/generate-id';
 
 export function NewRoom() {
   const { user } = useAuth();
   const history = useHistory();
-  const [newRoom, setNewRoom] = useState('')
+  const [newRoom, setNewRoom] = useState('');
 
   async function handleCreateRoom(event: FormEvent) {
     event.preventDefault();
@@ -22,14 +23,19 @@ export function NewRoom() {
       return;
     }
 
-    const roomRef = database.ref('rooms');
+    let roomId = generateId(16);
+    let roomRef = await database.ref(`rooms/${roomId}`).get();
 
-    const firebaseRoom = await roomRef.push({
-      title: newRoom,
-      authorId: user?.id
-    })
+    while(roomRef.exists()) {
+      roomId = generateId(16);
+      roomRef = await database.ref(`rooms/${roomId}`).get();
+    }
 
-    history.push(`/salas/${firebaseRoom.key}`);
+    await database
+      .ref(`rooms/${roomId}`)
+      .set({ title: newRoom, authorId: user?.id })
+
+    history.push(`/salas/${roomId}`);
   }
 
   return (

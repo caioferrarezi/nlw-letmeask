@@ -1,9 +1,10 @@
 import { FormEvent, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { Button } from '../components/Button'
 import { RoomCode } from '../components/RoomCode';
 import { Question } from '../components/Question';
+import { Spinner } from '../components/Spinner';
 
 import { useAuth } from '../hooks/useAuth';
 import { useRoom } from '../hooks/useRoom';
@@ -21,7 +22,7 @@ export function Room() {
   const { id: roomId } = useParams<RoomParams>();
 
   const { user } = useAuth();
-  const { title, questions } = useRoom(roomId);
+  const { title, questions, isLoading } = useRoom(roomId);
   const [newQuestion, setNewQuestion] = useState('');
 
   async function handleSendQuestion(event: FormEvent) {
@@ -62,11 +63,17 @@ export function Room() {
     }
   }
 
+  if (isLoading) {
+    return <Spinner />
+  }
+
   return (
     <div id="page-room">
       <header>
         <div className="content">
-          <img src={logoImg} alt="letmeask" />
+          <Link to="/">
+            <img src={logoImg} alt="letmeask" />
+          </Link>
 
           <RoomCode code={roomId} />
         </div>

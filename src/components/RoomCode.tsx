@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import copyImg from '../assets/images/copy.svg';
 
@@ -24,6 +24,14 @@ export function RoomCode(props: RoomCodeProps) {
     setCopiedTimeout(setTimeout(() => setIsCopied(false), 1000));
   }
 
+  useEffect(() => {
+    return () => {
+      if (copiedTimeout) {
+        clearTimeout(copiedTimeout);
+      }
+    }
+  }, [copiedTimeout])
+
   return (
     <button
       className="room-code"
@@ -34,7 +42,7 @@ export function RoomCode(props: RoomCodeProps) {
       </div>
 
       <span>
-        { isCopied ? 'Copiado!' : `Sala #${props.code}` }
+        { isCopied ? 'Copiado!' : `Código #${props.code}` }
       </span>
     </button>
   )

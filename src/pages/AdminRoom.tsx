@@ -1,18 +1,19 @@
 // import { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { Link, useHistory, useParams } from 'react-router-dom';
 
 import { Button } from '../components/Button'
 import { RoomCode } from '../components/RoomCode';
 import { Question } from '../components/Question';
+import { Spinner } from '../components/Spinner';
 
 // import { useAuth } from '../hooks/useAuth';
+import { useRoom } from '../hooks/useRoom';
 import { database } from '../services/firebase';
 
 import logoImg from '../assets/images/logo.svg';
 import deleteImg from '../assets/images/delete.svg';
 
 import '../styles/room.scss'
-import { useRoom } from '../hooks/useRoom';
 
 type RoomParams = {
   id: string;
@@ -23,7 +24,7 @@ export function AdminRoom() {
   const history = useHistory();
 
   // const { user } = useAuth();
-  const { title, questions } = useRoom(roomId);
+  const { title, questions, isLoading } = useRoom(roomId);
 
   async function handleEndRoom() {
     await database.ref(`rooms/${roomId}`).update({
@@ -41,11 +42,17 @@ export function AdminRoom() {
     }
   }
 
+  if (isLoading) {
+    return <Spinner />
+  }
+
   return (
     <div id="page-room">
       <header>
         <div className="content">
-          <img src={logoImg} alt="letmeask" />
+          <Link to="/">
+            <img src={logoImg} alt="letmeask" />
+          </Link>
 
           <div>
             <RoomCode code={roomId} />

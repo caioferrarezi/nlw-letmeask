@@ -39,13 +39,19 @@ export function Home() {
       return;
     }
 
-    if (roomRef.val().endedAt) {
+    const roomData = roomRef.val()
+
+    if (roomData.endedAt) {
       alert('A sala já foi fechada');
 
       return;
     }
 
-    history.push(`/salas/${roomCode}`);
+    if (roomData.authorId === user?.id) {
+      history.push(`/admin/salas/${roomCode}`);
+    } else {
+      history.push(`/salas/${roomCode}`);
+    }
   }
 
   return (
